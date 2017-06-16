@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/io.sarl.core_0.4.3.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/io.sarl.lang.core_0.4.3.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/io.sarl.util_0.4.3.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/javax.inject_1.0.0.v20091030.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/aopalliance_1.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/com.google.gson_2.4.0.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/com.google.guava_19.0.0.rc3.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/com.google.inject.multibindings_4.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/com.google.inject_4.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/com.hazelcast_3.7.0.EA.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/io.janusproject.plugin_0.4.3.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/javax.servlet_3.1.0.v201410161800.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.apache.commons.cli_1.3.1.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.apache.log4j_1.2.15.v201012070815.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.arakhne.afc.core.util_14.0.0.20161019082642.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.arakhne.afc.core.vmutils_14.0.0.20161019082642.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.core.contenttype_3.5.100.v20160418-1621.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.core.jobs_3.8.0.v20160509-0411.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.core.runtime_3.12.0.v20160606-1342.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.equinox.common_3.8.0.v20160509-1230.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.equinox.preferences_3.6.1.v20160815-1406.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.equinox.registry_3.6.100.v20160223-2218.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.osgi.services_3.5.100.v20160504-1419.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.xtext.logging_1.2.15.v201605250459.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.slf4j.api_1.7.2.v20121108-1250.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.slf4j.impl.log4j12_1.7.2.v20131105-2200.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.zeromq.jeromq_0.3.5.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.xtext.xbase.lib_2.10.0.v201605250459.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.osgi.compatibility.state_1.0.200.v20160504-1419.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.osgi_3.11.1.v20160708-1632.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.equinox.app_1.3.400.v20150715-1528.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/boids-project_sarl"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

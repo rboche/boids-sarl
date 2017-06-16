@@ -1,0 +1,152 @@
+/**
+ *
+ */
+
+package ^agent
+
+import objects.AgentBody
+import capacities.DefaultEspaceSkill
+import capacities.EspaceManager
+import environment.Espace
+import environment.Population
+import events.Run
+import events.force
+import events.perceive
+import io.sarl.core.DefaultContextInteractions
+import io.sarl.core.Destroy
+import io.sarl.core.Initialize
+import io.sarl.core.InnerContextAccess
+import io.sarl.core.Lifecycle
+import io.sarl.core.Logging
+import io.sarl.util.Scopes
+import java.util.ArrayList
+import java.util.Collection
+import java.util.List
+import java.util.UUID
+import javafx.scene.paint.Color
+import math.Vector3f
+import objects.EnvObj
+
+/**
+ *
+ *
+ * @author Rémi
+ *
+ */
+
+agent EnvironmentAgent {
+
+	uses Lifecycle, Logging, DefaultContextInteractions, EspaceManager, InnerContextAccess
+
+	var espace : Espace
+
+	var count : int = 0
+
+	on Initialize {
+
+		this.espace = occurrence.parameters.get(0) as Espace
+		val nbBoids = occurrence.parameters.get(1) as Integer
+
+		setSkill(new DefaultEspaceSkill(this.espace), typeof(EspaceManager))
+
+		//Création de l'espace côté agent
+		info("L'envirronement a bien été installé")
+		val arrayGroup : List<Population> = new ArrayList<Population>()
+		arrayGroup.add(new Population(Color.BLUE))
+		arrayGroup.add(new Population(Color.RED))
+
+		for (group : arrayGroup) {
+			for (i : 0 ..< nbBoids/arrayGroup.size) {
+				var boidsBody = createBoid(null, group)
+				var position = boidsBody.position
+				spawnInContextWithID(typeof(BoidsAgent), boidsBody.agentId, defaultContext, #[group, position])
+				info(
+					"L'agent " + i + " appartenant au groupe " + group + " a été créé avec l'id " + boidsBody.agentId +
+						"position : " + boidsBody.position)
+			}
+		}
+	}
+
+	on Destroy {
+		clearSkill(typeof(EspaceManager))
+	}
+
+	on Run {
+		//on envoie tous les agentBody à tous les agents
+		val boidsBody : Collection<AgentBody> = espace.agentBodies
+		val envObj : Collection<EnvObj> = espace.allEnvObj
+		//Obstacle non gérés pour l'instant
+		emit(new perceive => [objectsBody = boidsBody; objectsEnv = envObj])
+	}
+
+	on force {
+
+		val agentId : UUID = occurrence.agentId
+		val boid : AgentBody = agentId.agentBody
+		val force : Vector3f = occurrence.F
+
+		if(force.length() > boid.groupe.maxForce){
+			force.normalize
+			force.fois(boid.groupe.maxForce)
+		}
+
+		val acceleration : Vector3f = boid.acceleration
+		acceleration.setXYZ(force)
+
+		val vitesse = boid.vitesse
+		vitesse.plus(acceleration)
+
+		if(vitesse.length > boid.groupe.maxSpeed){
+			vitesse.normalize
+			vitesse.fois(boid.groupe.maxSpeed)
+		}
+
+		val position : Vector3f = boid.position
+		boid.prevPosition = boid.position
+		position.plus(vitesse)
+
+		boid.acceleration = acceleration
+		boid.vitesse = vitesse
+		boid.position = position
+
+		adjustToWorld(boid)
+		//info("Nouvelle boucle")
+		emit(new perceive => [objectsBody = espace.agentBodies; objectsEnv = espace.allEnvObj], Scopes.addresses(occurrence.source))
+	}
+
+	def adjustToWorld(body : AgentBody){
+
+		var posX : float
+		var posY : float
+		var posZ : float
+
+		posX = body.position.x
+		posY = body.position.y
+		posZ = body.position.z
+
+		if(posX > espace.width){
+			posX = 0
+		}
+		if(posX < (-1 * espace.width)){
+			posX = espace.width
+		}
+		if(posY > espace.height){
+			posY = 0
+		}
+		if(posY < (-1 * espace.height)){
+			posY = espace.height
+		}
+		if(posZ > espace.depth){
+			posZ = 0
+		}
+		if(posZ < (-1 * espace.depth)){
+			posZ = espace.depth
+		}
+		
+		body.position = new Vector3f(posX, posY, posZ)
+	}
+
+
+
+}
+

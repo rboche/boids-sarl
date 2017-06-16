@@ -1,0 +1,28 @@
+/** 
+ * 
+ */
+package events
+
+import objects.AgentBody
+import java.util.Collection
+import java.util.UUID
+import math.Vector3f
+import objects.EnvObj
+
+/** 
+ * @author Rémi
+ * 
+ */
+ 
+event Run
+
+event perceive {
+	var objectsBody : Collection<AgentBody>
+	var objectsEnv : Collection<EnvObj>
+}
+
+event force {
+	var F : Vector3f
+	var agentId : UUID
+}
+

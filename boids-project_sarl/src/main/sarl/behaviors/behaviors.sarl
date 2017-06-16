@@ -1,0 +1,197 @@
+
+package behaviors
+
+import objects.AgentBody
+import environment.Population
+import events.force
+import io.sarl.core.DefaultContextInteractions
+import io.sarl.core.Logging
+import java.util.Collection
+import java.util.UUID
+import math.Vector3f
+import objects.EnvObj
+
+/**
+ * @author Rémi
+ *
+ */
+
+event forceCalculation {
+
+	var perceivedBoids_sep : Collection<AgentBody>
+
+	var perceivedBoids_coh : Collection<AgentBody>
+
+	var perceivedBoids_ali : Collection<AgentBody>
+	
+	var perceivedBoids_rep : Collection<AgentBody>
+	
+	var otherPerception : Collection<EnvObj>
+
+	var groupe : Population
+
+	var agentId : UUID
+
+	var myPosition : Vector3f
+	
+	var myVitesse : Vector3f
+}
+
+behavior forceBehavior {
+
+	uses DefaultContextInteractions,Logging
+
+	var groupe : Population
+
+	var agentId : UUID
+
+	on forceCalculation {
+	
+		var force_separation : Vector3f = new Vector3f(0,0,0)
+		var force_cohesion : Vector3f = new Vector3f(0,0,0)
+		var force_alignement : Vector3f = new Vector3f(0,0,0)
+		var force_repulsion : Vector3f = new Vector3f(0,0,0)
+		var otherForce : Vector3f = new Vector3f(0,0,0)
+		
+		groupe = occurrence.groupe
+		
+		val influence = new Vector3f(0,0,0)
+		
+		if(occurrence.groupe.cohesionOn)
+		{
+			force_cohesion = cohesion(occurrence.perceivedBoids_coh, occurrence.myPosition)
+			force_cohesion.fois(groupe.cohesionForce)
+			influence.plus(force_cohesion)
+		}
+
+		if(occurrence.groupe.alignementOn){
+			force_alignement = alignement(occurrence.perceivedBoids_ali, occurrence.myPosition)
+			force_alignement.fois(groupe.alignementForce)
+			influence.plus(force_alignement)
+		}
+		
+		if(occurrence.groupe.repulsionOn){
+			force_repulsion = repulsion(occurrence.perceivedBoids_rep, occurrence.myPosition)
+			force_repulsion.fois(groupe.repulsionForce)
+			influence.plus(force_repulsion)
+		}
+		
+		if (occurrence.groupe.separationOn) {
+			force_separation = separation(occurrence.perceivedBoids_sep, occurrence.myPosition)
+			force_separation.fois(groupe.separationForce)
+			influence.plus(force_separation)
+		}
+		
+		otherForce = otherForce(occurrence.agentId,occurrence.otherPerception,occurrence.myPosition,occurrence.myVitesse)
+		influence.plus(otherForce)
+		
+		
+		if (influence.length() > occurrence.groupe.maxForce) {
+			influence.normalize()
+			influence.fois(occurrence.groupe.maxForce)
+		}
+
+		influence.fois(1 / occurrence.groupe.masse)
+		
+		emit(new force => [F = influence; agentId = occurrence.agentId])
+
+	}
+
+	def separation(perceivedBoids : Collection<AgentBody>,position : Vector3f) {
+
+		var tmp = new Vector3f(0,0,0);
+		var force = new Vector3f(0,0,0);
+		var len : double
+		if(perceivedBoids != null){
+			for(otherBoids : perceivedBoids){
+				tmp.setXYZ(position)
+				tmp.moins(otherBoids.position)
+				len = tmp.length();
+				tmp.fois(1/(len*len));
+				force.plus(tmp);
+			}
+		}		
+		return force
+	}
+
+	def cohesion(perceivedBoids : Collection<AgentBody>, position : Vector3f) {
+		
+		var nbBoids : int = 0
+		var force = new Vector3f(0,0,0)
+		if(perceivedBoids != null){
+			for(otherBoids : perceivedBoids){
+				force.plus(otherBoids.position)
+				nbBoids++
+			}
+			if(nbBoids > 0){
+				force.fois(1/nbBoids)
+				force.moins(position)
+			}
+		}
+		return force
+	}
+
+	def alignement(perceivedBoids : Collection<AgentBody>, position : Vector3f) {
+		
+		var nbBoids : int = 0
+		var force = new Vector3f(0,0,0)
+
+		var tmp = new Vector3f
+		if(perceivedBoids != null){
+			for(otherBoids : perceivedBoids){
+
+				tmp.plus(otherBoids.vitesse)
+				tmp.fois(1/tmp.length())
+
+				force.plus(tmp)
+				nbBoids++
+			}
+
+			if(nbBoids > 0){
+				force.fois(1/nbBoids);
+			}
+		}
+		return force;
+	}
+	
+	def repulsion(perceivedBoids : Collection<AgentBody>, position : Vector3f) {
+		var force = new Vector3f(0,0,0)
+		var tmp= new Vector3f()
+		var len : double
+		if(perceivedBoids != null){
+			for (otherBoid : perceivedBoids) {
+				tmp.setXYZ(position)
+				tmp.moins(otherBoid.getPosition())
+				len = tmp.length()
+				tmp.fois( 1 / (len*len) )
+				force.plus(tmp)
+			}
+		}
+		return force
+	}
+	
+	def otherForce(agentId: UUID ,perceivedObj : Collection<EnvObj>, position : Vector3f, vitesse : Vector3f){
+		
+		var force = new Vector3f(0,0,0)
+		var tmp = new Vector3f(0,0,0)
+		var collisionVector : Vector3f = new Vector3f(vitesse)
+		
+		if(perceivedObj != null){
+			for(obj : perceivedObj){
+				if (obj.isWall) {
+					var objPos = obj.boundsInLocal
+					if (objPos.contains(position.x - groupe.distObstacle, position.y - groupe.distObstacle,
+						position.z - groupe.distObstacle)) {
+						force = collisionVector
+						force.moins(obj.position)
+						force.normalize
+					}
+				}
+			}
+		}
+		return force
+		
+	}
+	
+
+}

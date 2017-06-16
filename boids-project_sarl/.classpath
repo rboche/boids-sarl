@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/sarl"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="src" path="src/main/generated-sources/sarl">
+		<attributes>
+			<attribute name="ignore_optional_problems" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry exported="true" kind="con" path="io.sarl.eclipse.launching.SARL_SUPPORT">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/SARL/workspace/boids-project_sarl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/SARL/plugins/com.google.guava_18.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/io.sarl.core_0.4.3.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/io.sarl.lang.core_0.4.3.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/io.sarl.util_0.4.3.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/javax.inject_1.0.0.v20091030.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.osgi.compatibility.state_1.0.200.v20160504-1419.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.osgi_3.11.1.v20160708-1632.jar"/>
+	<classpathentry kind="lib" path="C:/SARL/plugins/org.eclipse.xtext.xbase.lib_2.10.0.v201605250459.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Boids-Application"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>

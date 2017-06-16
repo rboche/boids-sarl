@@ -1,0 +1,93 @@
+/** 
+ * 
+ */
+package capacities
+
+import objects.AgentBody
+import objects.EnvObj
+import environment.Espace
+import environment.Population
+import java.util.Collection
+import java.util.List
+import java.util.UUID
+import math.Point3f
+import math.Vector3f
+
+/** 
+ * @author Rémi
+ * 
+ */
+capacity EspaceManager {
+	
+	/**Replies the number of body in the espace */
+	def getBodyCount : int
+	
+	/** Replies a specific body */
+	def getAgentBody(id : UUID) : AgentBody
+	
+	/**Replies all the boidsBody */
+	def getBoidsBody : Collection<AgentBody>
+	
+	def getEspaceWidth : int
+	
+	def getEspaceHeight : int
+	
+	def getEspaceDepth : int
+	
+	def createBoid(agentId : UUID, groupe : Population) : AgentBody
+	
+}
+
+skill DefaultEspaceSkill implements EspaceManager {
+		
+	val espace : Espace
+
+	new(espace : Espace) {
+		this.espace = espace
+	}
+	
+	/**Replis the number of body in the espace
+	 */
+	def getBodyCount : int {
+		this.espace.bodyCount
+	}
+		
+	/** Replies a specific body
+	 */
+	def getAgentBody(id : UUID) : AgentBody {
+		this.espace.getAgentBody(id)
+	}
+	
+	/**Replies all the BoidsBody in the espace
+	 * 
+	 */
+	def getBoidsBody : Collection<AgentBody> {
+		this.espace.agentBodies
+	}
+
+	def getEspaceWidth : int {
+		this.espace.width
+	}
+
+	def getEspaceHeight : int {
+		this.espace.height
+	}
+
+	def getEspaceDepth : int {
+		this.espace.depth
+	}
+
+	/**
+	 * Create a boidsBody at a random position
+	 * 
+	 */
+	def createBoid(agentId : UUID, groupe : Population ) : AgentBody {
+		this.espace.createBody(agentId, groupe)
+	}	
+
+}
+
+
+
+
+

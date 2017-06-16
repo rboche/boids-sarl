@@ -1,0 +1,173 @@
+/**
+ *
+ */
+package ^agent
+
+import behaviors.forceBehavior
+import behaviors.forceCalculation
+import environment.Population
+import events.Run
+import events.perceive
+import io.sarl.core.Behaviors
+import io.sarl.core.Destroy
+import io.sarl.core.Initialize
+import java.util.Collection
+import java.util.Random
+import math.Vector3f
+import io.sarl.core.DefaultContextInteractions
+import io.sarl.core.Logging
+import java.util.ArrayList
+import io.sarl.core.Lifecycle
+import objects.AgentBody
+import objects.EnvObj
+
+/**
+ * @author Rémi
+ *
+ */
+
+agent BoidsAgent {
+
+	uses Behaviors,DefaultContextInteractions,Logging,Lifecycle
+
+	var myForceBehavior : forceBehavior
+
+	val random = new Random
+
+	var position : Vector3f
+
+	var previousPosition : Vector3f
+
+	var vitesse : Vector3f
+
+	var acceleration : Vector3f
+
+	var myGroupe : Population
+
+	on Initialize {
+		myForceBehavior = new forceBehavior(this)
+		this.position = occurrence.parameters.get(1) as Vector3f
+		this.myGroupe = occurrence.parameters.get(0) as Population
+		registerBehavior(myForceBehavior)
+
+		emit(new Run)
+	}
+
+	on Destroy {
+		unregisterBehavior(myForceBehavior)
+	}
+
+	/**on reçois les perceptions de l'envirronement
+	 * on calcule les forces
+	 * puis on renvoie les force à l'envirronement
+	*/
+	on perceive {
+
+		var objectsBody = occurrence.objectsBody
+		
+		var objectsEnv = occurrence.objectsEnv
+
+		val perceivedBoids_separation : Collection<AgentBody> = new ArrayList<AgentBody>()
+
+		val perceivedBoids_cohesion : Collection<AgentBody> = new ArrayList<AgentBody>()
+
+		val perceivedBoids_alignement : Collection<AgentBody> = new ArrayList<AgentBody>()
+		
+		val perceivedBoids_repulsion : Collection<AgentBody> = new ArrayList<AgentBody>()
+		
+		val perceivedEnvObj : Collection<EnvObj> = new ArrayList<EnvObj>()
+
+		perceivedBoids_alignement.clear
+		perceivedBoids_cohesion.clear
+		perceivedBoids_separation.clear
+		
+		if(objectsBody != null){
+			//on ne prend que les objets que l'on perçoit
+			for(obj : objectsBody){
+				if(obj.agentId.isMe){
+					this.position = obj.position
+					this.myGroupe = obj.groupe
+					this.acceleration = obj.acceleration
+					this.vitesse = obj.vitesse
+				}
+	
+				if((obj != null) && (!obj.agentId.isMe)){
+					if (visible(obj, myGroupe.distCohesion) && myGroupe == obj.groupe) {
+						perceivedBoids_cohesion.add(obj)
+					}
+					if (visible(obj, myGroupe.distAlignement) && myGroupe == obj.groupe) {
+						perceivedBoids_alignement.add(obj)
+					}
+					if (visible(obj, myGroupe.distSeparation) && myGroupe == obj.groupe) {
+						perceivedBoids_separation.add(obj)
+					}
+					if (proche(obj, myGroupe.distRepulsion) && myGroupe != obj.groupe) {
+						perceivedBoids_repulsion.add(obj)
+					}
+				}
+			}
+		}
+		
+		//Prise en compte des obstacles
+		if (objectsEnv != null) {
+			for (obj : objectsEnv) {
+				if ((obj != null) && (obj.isWall) 
+					&& ( obj.boundsInLocal.minX < position.x && obj.boundsInLocal.maxX < position.x)
+					&& ( obj.boundsInLocal.minY < position.y && obj.boundsInLocal.maxY < position.y)
+					&& ( obj.boundsInLocal.minZ < position.z && obj.boundsInLocal.maxZ < position.z)
+				) {
+					perceivedEnvObj.add(obj)
+				}
+			}
+		}
+		
+		
+		//info("perceivedBoid :" + perceivedBoids_separation)
+		//info("perceivedBoid :" + perceivedBoids_alignement)
+		//info("perceivedBoid :" + perceivedBoids_cohesion)
+		//info("perceivedObj " + perceivedEnvObj)
+		
+		wake(new forceCalculation => [
+			perceivedBoids_sep = perceivedBoids_separation;
+			perceivedBoids_coh = perceivedBoids_cohesion;
+			perceivedBoids_ali = perceivedBoids_alignement;
+			perceivedBoids_rep = perceivedBoids_repulsion;
+			otherPerception = perceivedEnvObj;
+			groupe = this.myGroupe;
+			agentId = this.ID;
+			myPosition = this.position;
+			myVitesse = this.vitesse
+		])
+	}
+
+	def visible(otherBoid : AgentBody,distance : double) : boolean{
+
+		var tmp = new Vector3f(otherBoid.position)
+
+		tmp.moins(this.position)
+
+		if(tmp.length > distance){
+			return false
+		}
+
+		var tmp2 = new Vector3f(otherBoid.vitesse)
+		tmp2.normalize
+
+		if (tmp2.point(tmp) < this.myGroupe.visibleAngleCos) {
+			return false
+		}
+
+		return true
+	}
+
+	def proche (otherBoid : EnvObj, distance : double) : boolean{
+
+		var tmp = new Vector3f(otherBoid.position)
+		tmp.moins(this.position)
+
+		if(tmp.length > distance){
+			return false
+		}
+		return true
+	}
+}
